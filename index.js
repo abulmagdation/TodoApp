@@ -4,6 +4,7 @@ dotenv.config();
 
 // requiring packeges
 const express = require('express');
+const cors = require('cors');
 
 // requiring my middlewares
 const Router = require('./middlewares/Router');
@@ -12,6 +13,7 @@ const Router = require('./middlewares/Router');
 const app = express();
 
 // use middlewares
+app.use(cors());
 app.use(express.json());
 
 // init APIs
