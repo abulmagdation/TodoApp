@@ -90,15 +90,15 @@ router.post("/get-user-info", auth, async (req, res) => {
 router.post(
 	"/add-task",
 	auth,
-	body("task")
-		.isLength({ min: 4, max: 30 })
-		.withMessage("Task must be between 4 and 30 charchtar"),
+	body("taskTitle")
+		.isLength({ min: 1, max: 100 })
+		.withMessage("Add a title"),
 	async (req, res, next) => {
 		const result = validationResult(req);
 		if (!result.isEmpty()) return next(result.array());
 
 		const { userId } = req;
-		const { task } = req.body;
+		const { taskTitle, taskDesc } = req.body;
 		const date = Date.now();
 		const client = new MongoClient(process.env.DB_URL);
 		try {
@@ -106,8 +106,8 @@ router.post(
 			const db = await client.db("todo");
 			const { insertedId } = await db
 				.collection("tasks")
-				.insertOne({ task, date, author: new ObjectId(userId) });
-			res.json({ insertedTask: { task, _id: insertedId, date } });
+				.insertOne({ taskTitle, taskDesc, date, author: new ObjectId(userId) });
+			res.json({ insertedTask: { taskTitle, taskDesc, _id: insertedId, date } });
 		} catch (error) {
 			res.status(501).json({ error: error.message });
 		} finally {
