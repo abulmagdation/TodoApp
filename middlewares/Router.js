@@ -159,6 +159,26 @@ router.post("/delete-task", auth, async (req, res, next) => {
 	}
 });
 
+
+router.post("/update-task-data", auth, async (req, res, next) => {
+	const { userId } = req;
+	const { _id, taskTitle, taskDesc } = req.body;
+	const client = new MongoClient(process.env.DB_URL);
+	try {
+		await client.connect();
+		const db = await client.db("todo");
+		await db
+			.collection("tasks")
+			.updateOne({ author: new ObjectId(userId), _id: new ObjectId(_id) }, {$set: {taskTitle, taskDesc}});
+		res.json({ done: true });
+	} catch (error) {
+		res.status(501).json({ error: error.message });
+	} finally {
+		await client.close();
+	}
+});
+
+
 router.post(
 	"/update-user-info",
 	auth,
